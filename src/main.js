@@ -58,8 +58,15 @@ form.addEventListener('submit', async event => {
 
     createGallery(data.hits);
     page += 1;
-    showLoadMoreButton();
-
+    if (loadedImages >= totalHits) {
+      hideLoadMoreButton();
+      iziToast.info({
+        title: 'Info',
+        message: "We're sorry, but you've reached the end of search results.",
+      });
+    } else {
+      showLoadMoreButton();
+    }
     input.value = '';
   } catch (error) {
     iziToast.error({
@@ -90,6 +97,10 @@ btnMore.addEventListener('click', async () => {
 
     if (loadedImages >= totalHits) {
       hideLoadMoreButton();
+      iziToast.info({
+        title: 'Info',
+        message: "We're sorry, but you've reached the end of search results.",
+      });
     }
   } catch (error) {
     iziToast.error({
