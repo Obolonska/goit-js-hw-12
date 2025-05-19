@@ -7,12 +7,20 @@ import {
   clearGallery,
   showLoader,
   hideLoader,
+  showLoadMoreButton,
+  hideLoadMoreButton,
 } from './js/render-functions';
 
 const form = document.querySelector('.form');
 const input = document.querySelector('input[name="search-text"]');
+const btnMore = document.querySelector('.load-more');
 
-form.addEventListener('submit', event => {
+let page = 1;
+let currentQuery = '';
+let totalHits = 0;
+let loadedImages = 0;
+
+form.addEventListener('submit', async event => {
   event.preventDefault();
 
   const query = input.value.trim();
@@ -25,29 +33,70 @@ form.addEventListener('submit', event => {
     hideLoader();
     return;
   }
-  clearGallery();
+  if (query !== currentQuery) {
+    page = 1;
+    currentQuery = query;
+    clearGallery();
+    hideLoadMoreButton();
+  }
+
   showLoader();
 
-  getImagesByQuery(query)
-    .then(data => {
-      if (data.hits.length === 0) {
-        iziToast.info({
-          title: 'Info',
-          message: 'Зображення не знайдено',
-        });
-        hideLoader();
-
-        return;
-      }
-
-      createGallery(data.hits);
-      input.value = '';
-    })
-    .catch(error => {
-      iziToast.error({
-        title: 'Error',
-        message: 'Помилка під час запиту',
+  try {
+    const data = await getImagesByQuery(query, page);
+    totalHits = data.totalHits;
+    loadedImages = data.hits.length;
+    if (data.hits.length === 0) {
+      iziToast.info({
+        title: 'Info',
+        message: 'Зображення не знайдено',
       });
       hideLoader();
+
+      return;
+    }
+
+    createGallery(data.hits);
+    page += 1;
+    showLoadMoreButton();
+
+    input.value = '';
+  } catch (error) {
+    iziToast.error({
+      title: 'Error',
+      message: 'Помилка під час запиту',
     });
+  } finally {
+    hideLoader();
+    input.value = '';
+  }
+});
+btnMore.addEventListener('click', async () => {
+  showLoader();
+  try {
+    const data = await getImagesByQuery(currentQuery, page);
+    if (data.hits.length === 0) {
+      hideLoadMoreButton();
+      iziToast.info({
+        title: 'Info',
+        message: 'Більше зображень не знайдено',
+      });
+      return;
+    }
+
+    createGallery(data.hits);
+    page += 1;
+    loadedImages += data.hits.length;
+
+    if (loadedImages >= totalHits) {
+      hideLoadMoreButton();
+    }
+  } catch (error) {
+    iziToast.error({
+      title: 'Error',
+      message: 'Помилка під час завантаження зображень',
+    });
+  } finally {
+    hideLoader();
+  }
 });

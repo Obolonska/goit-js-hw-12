@@ -28,3 +28,9 @@ button {
   letter-spacing: 0.04em;
   color: #fff;
 }
+.load-more {
+  display: flex;
+  justify-content: center;
+  margin: 32px auto 44px;
+  width: 125px;
+}

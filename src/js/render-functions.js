@@ -42,7 +42,7 @@ export function renderGallery({
 }
 export function createGallery(images) {
   const markup = images.map(renderGallery).join('');
-  gallery.innerHTML = markup;
+  gallery.insertAdjacentHTML('beforeend', markup);
 
   if (!lightbox) {
     lightbox = new SimpleLightbox('.gallery a', {
@@ -54,6 +54,7 @@ export function createGallery(images) {
   }
   hideLoader();
 }
+
 export function clearGallery() {
   gallery.innerHTML = '';
 }
@@ -62,4 +63,10 @@ export function showLoader() {
 }
 export function hideLoader() {
   document.querySelector('.loader').classList.add('is-hidden');
+}
+export function showLoadMoreButton() {
+  document.querySelector('.load-more').classList.remove('is-hidden');
+}
+export function hideLoadMoreButton() {
+  document.querySelector('.load-more').classList.add('is-hidden');
 }
