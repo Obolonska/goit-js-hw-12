@@ -54,6 +54,19 @@ export function createGallery(images) {
   }
   hideLoader();
 }
+export function scrollGallery() {
+  const galleryItem = document.querySelector('.gallery-item');
+  if (!galleryItem) return;
+
+  const { height: cardHeight } = document
+    .querySelector('.gallery-item')
+    .getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
+}
 
 export function clearGallery() {
   gallery.innerHTML = '';

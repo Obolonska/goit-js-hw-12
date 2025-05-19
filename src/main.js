@@ -9,6 +9,7 @@ import {
   hideLoader,
   showLoadMoreButton,
   hideLoadMoreButton,
+  scrollGallery,
 } from './js/render-functions';
 
 const form = document.querySelector('.form');
@@ -92,6 +93,7 @@ btnMore.addEventListener('click', async () => {
     }
 
     createGallery(data.hits);
+    scrollGallery();
     page += 1;
     loadedImages += data.hits.length;
 
